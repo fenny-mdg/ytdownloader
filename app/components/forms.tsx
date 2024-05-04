@@ -1,14 +1,16 @@
 import { useInputControl, type FieldMetadata } from "@conform-to/react";
+import type * as RadioGroupPrimitive from "@radix-ui/react-radio-group";
 import React from "react";
 
 import { Checkbox, type CheckboxProps } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Textarea } from "@/components/ui/textarea";
 
 type FieldProps = {
   labelProps: React.LabelHTMLAttributes<HTMLLabelElement>;
-  inputProps: React.InputHTMLAttributes<HTMLInputElement>;
+  inputProps: React.InputHTMLAttributes<HTMLInputElement> & { key?: string };
   className?: string;
   field: FieldMetadata<string, Record<string, unknown>>;
 };
@@ -25,6 +27,16 @@ type CheckboxFieldProps = {
   checkboxProps: CheckboxProps;
   className?: string;
   field: FieldMetadata<string, Record<string, unknown>>;
+};
+
+type RadioGroupFieldProps = {
+  labelProps: React.LabelHTMLAttributes<HTMLLabelElement>;
+  radiogroupProps: React.ComponentPropsWithoutRef<
+    typeof RadioGroupPrimitive.Root
+  >;
+  className?: string;
+  options: { label: string; value: string }[];
+  field: Partial<FieldMetadata<string, Record<string, unknown>>>;
 };
 
 export type ListOfErrors = (string | null | undefined)[] | null | undefined;
@@ -56,17 +68,22 @@ export function Field({
   field,
 }: FieldProps) {
   const { errorId, errors } = field;
+  const { key, ...otherInputProps } = inputProps;
+  const hasLabel = Boolean(labelProps.children);
 
   return (
     <div className={className}>
-      <Label
-        className="block text-sm font-medium text-gray-700"
-        htmlFor={inputProps.id}
-        {...labelProps}
-      />
-      <div className="mt-1">
+      {hasLabel ? (
+        <Label
+          className="block text-sm font-medium text-gray-700 mb-1"
+          htmlFor={otherInputProps.id}
+          {...labelProps}
+        />
+      ) : null}
+      <div>
         <Input
-          {...inputProps}
+          key={key}
+          {...otherInputProps}
           aria-describedby={errorId}
           aria-invalid={errors ? true : undefined}
         />
@@ -146,6 +163,38 @@ export function CheckboxField({
       {errorId ? (
         <div className="px-4 pb-3 pt-1">
           <ErrorList id={errorId} errors={errors} />
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+export function RadioGroupField({
+  labelProps,
+  radiogroupProps,
+  className,
+  options,
+  field,
+}: RadioGroupFieldProps) {
+  const { errorId, errors } = field;
+
+  return (
+    <div className={className}>
+      <Label htmlFor={radiogroupProps.id} {...labelProps} />
+      <RadioGroup className="flex gap-4" {...radiogroupProps}>
+        {options.map((option) => (
+          <div
+            key={option.value}
+            className="flex items-center gap-2 [&>label]:text-[16px]"
+          >
+            <RadioGroupItem value={option.value} />
+            <Label>{option.label} </Label>
+          </div>
+        ))}
+      </RadioGroup>
+      {errors ? (
+        <div className="min-h-[32px] px-4 pb-3 pt-1">
+          {errorId ? <ErrorList id={errorId} errors={errors} /> : null}
         </div>
       ) : null}
     </div>
