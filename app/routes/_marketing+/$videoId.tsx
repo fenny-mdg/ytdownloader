@@ -1,20 +1,12 @@
-import fs from "node:fs";
-
-import type {
-  ActionFunctionArgs,
-  LoaderFunctionArgs,
-  MetaFunction,
-} from "@remix-run/node";
+import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
 import {
-  Form,
   json,
-  useActionData,
+  Link,
   useLoaderData,
   useLocation,
   useNavigate,
 } from "@remix-run/react";
 import { useState } from "react";
-import invariant from "tiny-invariant";
 import ytdl from "ytdl-core";
 
 import { Button } from "@/components/ui/button";
@@ -68,55 +60,9 @@ export const loader = async ({ params }: LoaderFunctionArgs) => {
   }
 };
 
-export const action = async ({ request, params }: ActionFunctionArgs) => {
-  const { videoId } = params;
-  const formData = await request.formData();
-  const downloadType = formData.get("downloadType");
-  const quality = formData.get("quality");
-
-  invariant(typeof downloadType === "string", "downloadType is not a string");
-  invariant(typeof quality === "string", "quality is not a string");
-
-  try {
-    const videoUrl = `https://www.youtube.com/watch?v=${videoId}`;
-    const info = await ytdl.getInfo(videoUrl);
-    const format = ytdl.chooseFormat(info.formats, {
-      quality: "highest",
-      ...(downloadType === "audio" ? { filter: "audioonly" } : {}),
-    });
-    const extension = format.mimeType?.split(";")[0].split("/")[1];
-    const fileName = `${info.videoDetails.title}_[${format.qualityLabel}].${extension}`;
-
-    await new Promise((resolve, reject) => {
-      const file = ytdl.downloadFromInfo(info, { format });
-      const writeStream = fs.createWriteStream(fileName);
-
-      file.pipe(writeStream);
-
-      writeStream.on("finish", resolve);
-
-      writeStream.on("error", reject);
-    });
-    const mediaFile = fs.readFileSync(fileName);
-
-    return new Response(mediaFile, {
-      status: 200,
-      headers: {
-        "Content-Disposition": `attachment; filename="${fileName}"`,
-        "Content-Type": format.mimeType!,
-      },
-    });
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } catch (error: any) {
-    return json({ error: error.message }, { status: 500 });
-  }
-};
-
 export default function Index() {
-  const lastResult = useActionData<typeof action>();
-  console.log(lastResult);
   const loaderData = useLoaderData<typeof loader>();
+  const [quality, setQuality] = useState<string>("");
   const [videoUrl, setVideoUrl] = useState<string>(
     loaderData?.videoDetails?.url || "",
   );
@@ -128,9 +74,9 @@ export default function Index() {
   const handleUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setVideoUrl(e.target.value);
   };
+  const [currentVideoId] = location.pathname.split("/").filter(Boolean);
   const handleSearch = () => {
     const videoId = ytdl.getURLVideoID(videoUrl);
-    const [currentVideoId] = location.pathname.split("/").filter(Boolean);
 
     if (videoId && videoId !== currentVideoId) {
       navigate(`/${videoId}`, { replace: true });
@@ -154,15 +100,6 @@ export default function Index() {
           </h1>
 
           <div className="flex">
-            {/* <Field
-              className="flex-1"
-              field={fields.url}
-              labelProps={{ children: "" }}
-              inputProps={{
-                ...getInputProps(fields.url, { type: "url" }),
-                placeholder: "https://www.youtube.com/watch?v=xxxxxx",
-              }}
-            /> */}
             <Input
               onChange={handleUrlChange}
               value={videoUrl}
@@ -180,7 +117,7 @@ export default function Index() {
         </div>
 
         {videoDetails ? (
-          <Form className="mt-4" method="post">
+          <div className="mt-4">
             <input
               value={downloadType}
               readOnly
@@ -217,8 +154,8 @@ export default function Index() {
                         radiogroupProps={{
                           id: "quality",
                           name: "quality",
-
                           className: "flex flex-wrap gap-8",
+                          onValueChange: setQuality,
                         }}
                         options={(formats || []).map((format) => ({
                           label: format.qualityLabel as string,
@@ -242,12 +179,15 @@ export default function Index() {
                   </TabsContent>
                 </Tabs>
 
-                <Button type="submit" className="w-full mt-8">
-                  Download
-                </Button>
+                <Link
+                  to={`/download/${currentVideoId}?downloadType=${downloadType}&quality=${quality}`}
+                  reloadDocument
+                >
+                  <Button className="w-full mt-8">Download</Button>
+                </Link>
               </CardContent>
             </Card>
-          </Form>
+          </div>
         ) : null}
       </div>
     </main>
