@@ -11,4 +11,15 @@ module.exports = {
       ignoredRouteFiles: ["**/.*", "**/*.test.{ts,tsx}"],
     });
   },
+  browserNodeBuiltinsPolyfill: {
+    modules: {
+      stream: true,
+      querystring: true,
+      string_decoder: true,
+      http: true,
+      https: true,
+      timers: true,
+      vm: true,
+    },
+  },
 };
