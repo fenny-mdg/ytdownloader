@@ -17,6 +17,9 @@ import rateLimit from "express-rate-limit";
 import getPort, { portNumbers } from "get-port";
 import helmet from "helmet";
 import morgan from "morgan";
+import cron from "node-cron";
+
+import { autoRemoveDownloadedFiles } from "../app/utils/cron/auto-remover.server.ts";
 
 installGlobals();
 
@@ -209,6 +212,14 @@ const desiredPort = Number(process.env.PORT || 3000);
 const portToUse = await getPort({
   port: portNumbers(desiredPort, desiredPort + 100),
 });
+
+const appCron = cron.schedule("* * * * *", async () => {
+  console.log("Task started");
+
+  await autoRemoveDownloadedFiles();
+});
+
+appCron.start();
 
 const server = app.listen(portToUse, () => {
   const addy = server.address();

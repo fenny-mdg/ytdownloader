@@ -6,6 +6,8 @@ services:
       args:
         - DATABASE_URL=${DATABASE_URL}
         - SESSION_SECRET=${SESSION_SECRET}
+        - APP_DOWNLOAD_FOLDER=${APP_DOWNLOAD_FOLDER}
+        - APP_DOWNLOAD_LEASE_TIME=${APP_DOWNLOAD_LEASE_TIME}
     restart: always
     ports:
       - ${APP_PORT}:3000

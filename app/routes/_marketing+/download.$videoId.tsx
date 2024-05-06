@@ -4,7 +4,7 @@ import { json, LoaderFunctionArgs } from "@remix-run/node";
 import invariant from "tiny-invariant";
 import ytdl from "ytdl-core";
 
-const { DOWNLOAD_FOLDER } = process.env;
+const { APP_DOWNLOAD_FOLDER } = process.env;
 
 const extensionMapper: Record<string, string> = {
   webm: "mp3",
@@ -28,7 +28,7 @@ export const loader = async ({ params, request }: LoaderFunctionArgs) => {
     });
     const extension = format.mimeType?.split(";")[0].split("/")[1];
     const fileName = `${info.videoDetails.title}_[${format.qualityLabel || format.audioBitrate}].${extensionMapper[extension!] || extension}`;
-    const filePath = `${DOWNLOAD_FOLDER}/${fileName}`;
+    const filePath = `${APP_DOWNLOAD_FOLDER}/${fileName}`;
 
     await new Promise((resolve, reject) => {
       const file = ytdl.downloadFromInfo(info, { format });
