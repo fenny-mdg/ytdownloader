@@ -197,6 +197,7 @@ export default function VideoDetail() {
                         id: "quality",
                         name: "quality",
                         className: "flex flex-wrap gap-8 [&>div]:w-[64px]",
+                        onValueChange: setQuality,
                       }}
                       options={(audioFormats || []).map((format) => ({
                         label: `${format.audioBitrate}kbps`,
