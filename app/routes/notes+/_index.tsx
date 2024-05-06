@@ -1,6 +1,6 @@
 import { Link } from "@remix-run/react";
 
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/button.tsx";
 
 export default function NoteIndexPage() {
   return (

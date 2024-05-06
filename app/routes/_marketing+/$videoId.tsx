@@ -9,41 +9,64 @@ import {
 import { useState } from "react";
 import ytdl from "ytdl-core";
 
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/button.tsx";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { RadioGroupField } from "~/components/forms";
+} from "@/components/ui/card.tsx";
+import { Input } from "@/components/ui/input.tsx";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/components/ui/tabs.tsx";
+import { RadioGroupField } from "~/components/forms.tsx";
 
 export const meta: MetaFunction = () => [{ title: "Yt Downloader" }];
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {
   const { videoId } = params;
+  const qualityPrefix = (qualityLabel: string) => {
+    const [qualityLabelSplitted] = qualityLabel.split("p");
 
+    return Number(qualityLabelSplitted);
+  };
   try {
     const videoUrl = `https://www.youtube.com/watch?v=${videoId}`;
     const {
       videoDetails: { title, lengthSeconds, description, thumbnails },
       formats,
-    } = await ytdl.getBasicInfo(videoUrl);
-    const filteredFormats = formats
+    } = await ytdl.getInfo(videoUrl);
+    const videoFormats = formats
       .filter(
         (format, index, originalFormats) =>
           index ===
-          originalFormats.findIndex((f) => f.quality === format.quality),
+          originalFormats.findIndex(
+            (f) => f.quality === format.quality && Boolean(f.itag),
+          ),
       )
-      .map(({ quality, qualityLabel, videoCodec, audioCodec }) => ({
+      .map(({ quality, qualityLabel, itag }) => ({
         quality,
         qualityLabel,
-        videoCodec,
-        audioCodec,
-      }));
+        itag,
+      }))
+      .sort((a, b) => {
+        const { qualityLabel: aQualityLabel } = a;
+        const { qualityLabel: bQualittyLabel } = b;
+
+        return qualityPrefix(aQualityLabel) - qualityPrefix(bQualittyLabel);
+      });
+    const audioFormats = formats
+      .filter((format) => Boolean(format.audioBitrate))
+      .map(({ audioBitrate, itag }) => ({
+        itag,
+        audioBitrate,
+      }))
+      .sort((a, b) => a.audioBitrate! - b.audioBitrate!);
 
     return json({
       videoDetails: {
@@ -53,14 +76,14 @@ export const loader = async ({ params }: LoaderFunctionArgs) => {
         thumbnails,
         url: videoUrl,
       },
-      formats: filteredFormats,
+      formats: { videoFormats, audioFormats },
     });
   } catch (error) {
     return json({ videoDetails: null, formats: null });
   }
 };
 
-export default function Index() {
+export default function VideoDetail() {
   const loaderData = useLoaderData<typeof loader>();
   const [quality, setQuality] = useState<string>("");
   const [videoUrl, setVideoUrl] = useState<string>(
@@ -70,7 +93,8 @@ export default function Index() {
   const location = useLocation();
   const navigate = useNavigate();
   const videoDetails = loaderData?.videoDetails;
-  const formats = loaderData?.formats;
+  const videoFormats = loaderData?.formats?.videoFormats;
+  const audioFormats = loaderData?.formats?.audioFormats;
   const handleUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setVideoUrl(e.target.value);
   };
@@ -88,6 +112,7 @@ export default function Index() {
 
     if (id) {
       setDownloadType(id.split("-").pop());
+      setQuality("");
     }
   };
 
@@ -154,12 +179,12 @@ export default function Index() {
                         radiogroupProps={{
                           id: "quality",
                           name: "quality",
-                          className: "flex flex-wrap gap-8",
+                          className: "flex flex-wrap gap-8 [&>div]:w-[64px]",
                           onValueChange: setQuality,
                         }}
-                        options={(formats || []).map((format) => ({
+                        options={(videoFormats || []).map((format) => ({
                           label: format.qualityLabel as string,
-                          value: format.quality as string,
+                          value: `${format.itag}`,
                         }))}
                       />
                     </div>
@@ -171,20 +196,28 @@ export default function Index() {
                       radiogroupProps={{
                         id: "quality",
                         name: "quality",
-                        className: "flex flex-wrap gap-8",
-                        defaultValue: "highest",
+                        className: "flex flex-wrap gap-8 [&>div]:w-[64px]",
                       }}
-                      options={[{ label: "Audio", value: "highest" }]}
+                      options={(audioFormats || []).map((format) => ({
+                        label: `${format.audioBitrate}kbps`,
+                        value: `${format.itag}`,
+                      }))}
                     />
                   </TabsContent>
                 </Tabs>
 
-                <Link
-                  to={`/download/${currentVideoId}?downloadType=${downloadType}&quality=${quality}`}
-                  reloadDocument
-                >
-                  <Button className="w-full mt-8">Download</Button>
-                </Link>
+                {quality ? (
+                  <Link
+                    to={`/download/${currentVideoId}?downloadType=${downloadType}&quality=${quality}`}
+                    reloadDocument
+                  >
+                    <Button className="w-full mt-8">Download</Button>
+                  </Link>
+                ) : (
+                  <Button className="w-full mt-8" disabled>
+                    Download
+                  </Button>
+                )}
               </CardContent>
             </Card>
           </div>

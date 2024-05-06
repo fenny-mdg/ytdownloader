@@ -4,6 +4,12 @@ import { json, LoaderFunctionArgs } from "@remix-run/node";
 import invariant from "tiny-invariant";
 import ytdl from "ytdl-core";
 
+const { DOWNLOAD_FOLDER } = process.env;
+
+const extensionMapper: Record<string, string> = {
+  webm: "mp3",
+};
+
 export const loader = async ({ params, request }: LoaderFunctionArgs) => {
   const { videoId } = params;
   const searchParams = new URL(request.url).searchParams;
@@ -17,15 +23,16 @@ export const loader = async ({ params, request }: LoaderFunctionArgs) => {
     const videoUrl = `https://www.youtube.com/watch?v=${videoId}`;
     const info = await ytdl.getInfo(videoUrl);
     const format = ytdl.chooseFormat(info.formats, {
-      quality: "highest",
+      quality,
       ...(downloadType === "audio" ? { filter: "audioonly" } : {}),
     });
     const extension = format.mimeType?.split(";")[0].split("/")[1];
-    const fileName = `${info.videoDetails.title}_[${format.qualityLabel}].${extension}`;
+    const fileName = `${info.videoDetails.title}_[${format.qualityLabel || format.audioBitrate}].${extensionMapper[extension!] || extension}`;
+    const filePath = `${DOWNLOAD_FOLDER}/${fileName}`;
 
     await new Promise((resolve, reject) => {
       const file = ytdl.downloadFromInfo(info, { format });
-      const writeStream = fs.createWriteStream(fileName);
+      const writeStream = fs.createWriteStream(filePath);
 
       file.pipe(writeStream);
 
@@ -33,7 +40,7 @@ export const loader = async ({ params, request }: LoaderFunctionArgs) => {
 
       writeStream.on("error", reject);
     });
-    const mediaFile = fs.readFileSync(fileName);
+    const mediaFile = fs.readFileSync(filePath);
 
     return new Response(mediaFile, {
       status: 200,

@@ -2,10 +2,10 @@ import type { LoaderFunctionArgs } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { Form, Link, NavLink, Outlet, useLoaderData } from "@remix-run/react";
 
-import { Button } from "@/components/ui/button";
-import { getNoteListItems } from "~/utils/note.server";
-import { requireUserId } from "~/utils/session.server";
-import { useUser } from "~/utils/utils";
+import { Button } from "@/components/ui/button.tsx";
+import { getNoteListItems } from "~/utils/note.server.ts";
+import { requireUserId } from "~/utils/session.server.ts";
+import { useUser } from "~/utils/utils.ts";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const userId = await requireUserId(request);

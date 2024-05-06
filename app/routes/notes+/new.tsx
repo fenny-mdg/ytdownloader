@@ -6,10 +6,10 @@ import { Form, useActionData } from "@remix-run/react";
 import { useEffect, useRef } from "react";
 import { z } from "zod";
 
-import { Button } from "@/components/ui/button";
-import { Field, TextareaField } from "~/components/forms";
-import { createNote } from "~/utils/note.server";
-import { requireUserId } from "~/utils/session.server";
+import { Button } from "@/components/ui/button.tsx";
+import { Field, TextareaField } from "~/components/forms.tsx";
+import { createNote } from "~/utils/note.server.ts";
+import { requireUserId } from "~/utils/session.server.ts";
 
 const NewNoteSchema = z.object({
   title: z.string(),
