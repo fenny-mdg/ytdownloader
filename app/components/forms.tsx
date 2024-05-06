@@ -2,11 +2,11 @@ import { useInputControl, type FieldMetadata } from "@conform-to/react";
 import type * as RadioGroupPrimitive from "@radix-ui/react-radio-group";
 import React from "react";
 
-import { Checkbox, type CheckboxProps } from "@/components/ui/checkbox";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Textarea } from "@/components/ui/textarea";
+import { Checkbox, type CheckboxProps } from "@/components/ui/checkbox.tsx";
+import { Input } from "@/components/ui/input.tsx";
+import { Label } from "@/components/ui/label.tsx";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group.tsx";
+import { Textarea } from "@/components/ui/textarea.tsx";
 
 type FieldProps = {
   labelProps: React.LabelHTMLAttributes<HTMLLabelElement>;

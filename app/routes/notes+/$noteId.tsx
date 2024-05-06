@@ -8,9 +8,9 @@ import {
 } from "@remix-run/react";
 import invariant from "tiny-invariant";
 
-import { Button } from "@/components/ui/button";
-import { deleteNote, getNote } from "~/utils/note.server";
-import { requireUserId } from "~/utils/session.server";
+import { Button } from "@/components/ui/button.tsx";
+import { deleteNote, getNote } from "~/utils/note.server.ts";
+import { requireUserId } from "~/utils/session.server.ts";
 
 export const loader = async ({ params, request }: LoaderFunctionArgs) => {
   const userId = await requireUserId(request);

@@ -5,9 +5,9 @@ import { Form, redirect, useActionData, useNavigation } from "@remix-run/react";
 import ytdl from "ytdl-core";
 import { z } from "zod";
 
-import { Button } from "@/components/ui/button";
-import { Field } from "~/components/forms";
-import { youtubeVideoUrlRegex } from "~/utils/regexp";
+import { Button } from "@/components/ui/button.tsx";
+import { Field } from "~/components/forms.tsx";
+import { youtubeVideoUrlRegex } from "~/utils/regexp.ts";
 
 export const meta: MetaFunction = () => [{ title: "Yt Downloader" }];
 

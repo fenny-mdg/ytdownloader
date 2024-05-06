@@ -10,10 +10,10 @@ import { Form, Link, useActionData, useSearchParams } from "@remix-run/react";
 import { useEffect, useRef } from "react";
 import { z } from "zod";
 
-import { Button } from "@/components/ui/button";
-import { CheckboxField, Field } from "~/components/forms";
-import { createUserSession, getUserId } from "~/utils/session.server";
-import { verifyLogin } from "~/utils/user.server";
+import { Button } from "@/components/ui/button.tsx";
+import { CheckboxField, Field } from "~/components/forms.tsx";
+import { createUserSession, getUserId } from "~/utils/session.server.ts";
+import { verifyLogin } from "~/utils/user.server.ts";
 
 export const LoginSchema = z.object({
   email: z.string(),

@@ -9,17 +9,22 @@ import {
 import { useState } from "react";
 import ytdl from "ytdl-core";
 
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/button.tsx";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { RadioGroupField } from "~/components/forms";
+} from "@/components/ui/card.tsx";
+import { Input } from "@/components/ui/input.tsx";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/components/ui/tabs.tsx";
+import { RadioGroupField } from "~/components/forms.tsx";
 
 export const meta: MetaFunction = () => [{ title: "Yt Downloader" }];
 
