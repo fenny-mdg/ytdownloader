@@ -1,5 +1,6 @@
 import fs from "node:fs/promises";
 
+// eslint-disable-next-line no-undef
 const { APP_DOWNLOAD_FOLDER, APP_DOWNLOAD_LEASE_TIME = "0" } = process.env;
 
 export const autoRemoveDownloadedFiles = async () => {
