@@ -134,12 +134,16 @@ jobs:
       - name: 🏄 Build env vars file
         env:
           APP_PORT: ${{ vars.APP_PORT }}
+          APP_DOWNLOAD_FOLDER: ${{ vars.APP_DOWNLOAD_FOLDER }}
+          APP_DOWNLOAD_LEASE_TIME: ${{ vars.APP_DOWNLOAD_LEASE_TIME }}
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           SESSION_SECRET: ${{ secrets.SESSION_SECRET }}
         run: |
           echo "DATABASE_URL=$DATABASE_URL" >> .env
           echo "APP_PORT=$APP_PORT" >> .env
           echo "SESSION_SECRET=$SESSION_SECRET" >> .env
+          echo "APP_DOWNLOAD_FOLDER=$APP_DOWNLOAD_FOLDER" >> .env
+          echo "APP_DOWNLOAD_LEASE_TIME=$APP_DOWNLOAD_LEASE_TIME" >> .env
           cat .env
 
       - name: 🚚 Move Dockerfile
