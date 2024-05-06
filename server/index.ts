@@ -19,7 +19,7 @@ import helmet from "helmet";
 import morgan from "morgan";
 import cron from "node-cron";
 
-import { autoRemoveDownloadedFiles } from "../app/utils/cron/auto-remover.server.ts";
+import { autoRemoveDownloadedFiles } from "../app/utils/cron/auto-remover.server.js";
 
 installGlobals();
 
