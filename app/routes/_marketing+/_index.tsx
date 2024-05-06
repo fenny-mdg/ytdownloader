@@ -65,6 +65,7 @@ export default function Index() {
           id={form.id}
           aria-invalid={form.errors ? true : undefined}
           aria-describedby={form.errors ? form.errorId : undefined}
+          reloadDocument
         >
           <h1 className="text-3xl lg:text-5xl text-center mb-8 lg:mb-14">
             Youtube video downloader
