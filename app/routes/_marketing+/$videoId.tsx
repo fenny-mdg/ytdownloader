@@ -25,6 +25,7 @@ import {
   TabsTrigger,
 } from "@/components/ui/tabs.tsx";
 import { RadioGroupField } from "~/components/forms.tsx";
+import { formatDuration } from "~/utils/utils.ts";
 
 export const meta: MetaFunction = () => [{ title: "Yt Downloader" }];
 
@@ -120,7 +121,7 @@ export default function VideoDetail() {
     <main className="flex flex-col p-4 w-full lg:items-center">
       <div className="lg:w-1/2">
         <div>
-          <h1 className="text-3xl lg:text-5xl text-center mb-8 lg:mb-14">
+          <h1 className="text-3xl lg:text-5xl text-center mb-8 lg:mb-14 mt-8">
             Youtube video downloader
           </h1>
 
@@ -151,13 +152,18 @@ export default function VideoDetail() {
             />
             <Card>
               <CardHeader>
-                <CardTitle>{videoDetails.title}</CardTitle>
-                <CardDescription className="flex max-sm:flex-col gap-4">
-                  <img
-                    src={videoDetails.thumbnails?.[0]?.url}
-                    alt={videoDetails.title}
-                    className="rounded-md"
-                  />
+                <CardTitle className="mb-4">{videoDetails.title}</CardTitle>
+                <CardDescription className="flex max-md:flex-col gap-4">
+                  <div className="relative md:flex-shrink-0 max-md:flex-grow flex">
+                    <img
+                      src={videoDetails.thumbnails?.[0]?.url}
+                      alt={videoDetails.title}
+                      className="rounded-md w-full md:w-auto"
+                    />
+                    <span className="absolute bottom-2 right-2 bg-black bg-opacity-50 text-white p-1 rounded-md lg:text-xs font-medium">
+                      {formatDuration(Number(videoDetails.lengthSeconds))}
+                    </span>
+                  </div>
                   <span> {videoDetails.description}</span>
                 </CardDescription>
               </CardHeader>
