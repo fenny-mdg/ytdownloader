@@ -1,6 +1,7 @@
 import fs from "node:fs";
 
 import { json, LoaderFunctionArgs } from "@remix-run/node";
+import contentDisposition from "content-disposition";
 import invariant from "tiny-invariant";
 import ytdl from "ytdl-core";
 
@@ -46,7 +47,7 @@ export const loader = async ({ params, request }: LoaderFunctionArgs) => {
     return new Response(mediaFile, {
       status: 200,
       headers: {
-        "Content-Disposition": `attachment; filename="${fileName}"`,
+        "Content-Disposition": `attachment; filename="${contentDisposition(fileName)}"`,
         "Content-Type": format.mimeType!,
         "Content-Length": contentLength.toString(),
       },
