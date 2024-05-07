@@ -41,12 +41,14 @@ export const loader = async ({ params, request }: LoaderFunctionArgs) => {
       writeStream.on("error", reject);
     });
     const mediaFile = fs.readFileSync(filePath);
+    const contentLength = fs.statSync(filePath).size;
 
     return new Response(mediaFile, {
       status: 200,
       headers: {
         "Content-Disposition": `attachment; filename="${fileName}"`,
         "Content-Type": format.mimeType!,
+        "Content-Length": contentLength.toString(),
       },
     });
 

@@ -74,3 +74,23 @@ export function useUser(): User {
 export function validateEmail(email: unknown): email is string {
   return typeof email === "string" && email.length > 3 && email.includes("@");
 }
+
+export function formatDuration(durationInSeconds: number) {
+  if (durationInSeconds < 0) {
+    throw new Error("Duration must be a positive number");
+  }
+
+  const oneHourInSeconds = 60 * 60;
+  const hour = Math.floor(durationInSeconds / oneHourInSeconds);
+  // We always want to show minutes and seconds even if it's 0
+  const minute = Math.floor(
+    (durationInSeconds % oneHourInSeconds) / 60,
+  ).toString();
+  const second = (durationInSeconds % 60).toString();
+  const parts = [hour, minute, second]
+    .filter(Boolean)
+    .map((part) => part.toString().padStart(2, "0"))
+    .join(":");
+
+  return parts;
+}

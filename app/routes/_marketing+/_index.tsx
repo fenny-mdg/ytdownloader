@@ -67,7 +67,7 @@ export default function Index() {
           aria-describedby={form.errors ? form.errorId : undefined}
           reloadDocument
         >
-          <h1 className="text-3xl lg:text-5xl text-center mb-8 lg:mb-14">
+          <h1 className="text-3xl lg:text-5xl text-center mb-8 lg:mb-14 mt-8">
             Youtube video downloader
           </h1>
 
