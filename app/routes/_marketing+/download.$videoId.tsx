@@ -47,7 +47,7 @@ export const loader = async ({ params, request }: LoaderFunctionArgs) => {
     return new Response(mediaFile, {
       status: 200,
       headers: {
-        "Content-Disposition": `attachment; filename="${contentDisposition(fileName)}"`,
+        "Content-Disposition": contentDisposition(fileName),
         "Content-Type": format.mimeType!,
         "Content-Length": contentLength.toString(),
       },
