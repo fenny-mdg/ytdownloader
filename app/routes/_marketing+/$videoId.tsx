@@ -62,7 +62,9 @@ export const loader = async ({ params }: LoaderFunctionArgs) => {
         return qualityPrefix(aQualityLabel) - qualityPrefix(bQualittyLabel);
       });
     const audioFormats = formats
-      .filter((format) => Boolean(format.audioBitrate))
+      .filter(
+        (format) => Boolean(format.audioBitrate) && ![18].includes(format.itag),
+      )
       .map(({ audioBitrate, itag }) => ({
         itag,
         audioBitrate,
@@ -105,6 +107,8 @@ export default function VideoDetail() {
 
     if (videoId && videoId !== currentVideoId) {
       navigate(`/${videoId}`, { replace: true });
+      setDownloadType("video");
+      setQuality("");
     }
   };
   const handleTabHeaderClick = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -168,7 +172,11 @@ export default function VideoDetail() {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <Tabs defaultValue="video" className="w-full">
+                <Tabs
+                  defaultValue="video"
+                  className="w-full"
+                  value={downloadType}
+                >
                   <TabsList className="w-full" onClick={handleTabHeaderClick}>
                     <TabsTrigger className="w-1/2" value="video">
                       Video
@@ -185,7 +193,7 @@ export default function VideoDetail() {
                         radiogroupProps={{
                           id: "quality",
                           name: "quality",
-                          className: "flex flex-wrap gap-8 [&>div]:w-[64px]",
+                          className: "flex flex-wrap gap-8 [&>div]:w-fit",
                           onValueChange: setQuality,
                         }}
                         options={(videoFormats || []).map((format) => ({
@@ -202,7 +210,7 @@ export default function VideoDetail() {
                       radiogroupProps={{
                         id: "quality",
                         name: "quality",
-                        className: "flex flex-wrap gap-8 [&>div]:w-[64px]",
+                        className: "flex flex-wrap gap-8 [&>div]:w-fit",
                         onValueChange: setQuality,
                       }}
                       options={(audioFormats || []).map((format) => ({
