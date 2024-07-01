@@ -5,7 +5,7 @@ const { APP_DOWNLOAD_FOLDER, APP_DOWNLOAD_LEASE_TIME = "0" } = process.env;
 
 export const autoRemoveDownloadedFiles = async () => {
   try {
-    const downloadLeaseTime = Number(APP_DOWNLOAD_LEASE_TIME) || 1000 * 60 * 5;
+    const downloadLeaseTime = Number(APP_DOWNLOAD_LEASE_TIME) || 1000 * 60 * 20;
     const files = await fs.readdir(APP_DOWNLOAD_FOLDER || "");
     const now = Date.now();
     for (const file of files) {
